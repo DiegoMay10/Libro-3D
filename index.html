@@ -10,16 +10,17 @@
   <script src="https://cdn.jsdelivr.net/gh/blasten/turn.js@4/turn.min.js"></script>
 </head>
 <body>
+
   <header>
     <button id="prev-page">⬅ Anterior</button>
-    <span id="page-indicator">Página 1 / 25</span>
+    <span id="page-indicator">Página 1</span>
     <button id="next-page">Siguiente ➡</button>
     <button id="toggle-darkmode">🌙 Tema</button>
     <button id="zoom-toggle">🔍 Zoom</button>
   </header>
 
   <main>
-    <h1>📖 Libro 3D Avanzado</h1>
+    <h1>📖 Libro 3D Interactivo</h1>
     <div id="flipbook"></div>
   </main>
 
@@ -29,41 +30,65 @@
   <audio id="cerrar-sound" src="cierre-libro.mp3" preload="auto"></audio>
 
   <script>
-    let currentPage = 1;
-    const totalPages = 25;
     const flipbook = $('#flipbook');
     const sound = document.getElementById('page-sound');
     const cerrarSound = document.getElementById('cerrar-sound');
+    let totalPages = 0;
 
     function updateIndicator(page) {
       document.getElementById('page-indicator').innerText = `Página ${page} / ${totalPages}`;
     }
 
-    function createPage(idx) {
+    function createPageElement(pagina, idx) {
       const div = document.createElement('div');
       div.className = 'page';
-      const img = document.createElement('img');
-      img.src = `https://placehold.co/400x500?text=Página+${idx}`;
-      img.alt = `Página ${idx}`;
-      img.addEventListener('click', () => showFullscreen(img.src));
-      div.appendChild(img);
+
+      if (pagina.tipo === 'imagen') {
+        const img = document.createElement('img');
+        img.src = pagina.src || `https://placehold.co/400x500?text=Página+${idx}`;
+        img.alt = `Página ${idx}`;
+        img.addEventListener('click', () => showFullscreen(img.src));
+        div.appendChild(img);
+
+      } else if (pagina.tipo === 'html') {
+        div.innerHTML = pagina.contenido;
+
+      } else if (pagina.tipo === 'cierre') {
+        div.innerHTML = `
+          <div class="cierre-libro">
+            <h2>${pagina.contenido}</h2>
+            <button onclick="cerrarLibro()">🔁 Volver a empezar</button>
+          </div>`;
+      }
+
       return div;
+    }
+
+    function cerrarLibro() {
+      cerrarSound.play();
+      const libro = document.getElementById("flipbook");
+      libro.classList.add("cerrado");
+      setTimeout(() => {
+        $('#flipbook').turn('page', 1);
+        libro.classList.remove("cerrado");
+      }, 1000);
     }
 
     function showFullscreen(src) {
       const overlay = document.getElementById('fullscreen-overlay');
       overlay.style.backgroundImage = `url(${src})`;
       overlay.classList.remove('hidden');
-      overlay.addEventListener('click', () => overlay.classList.add('hidden'));
+      overlay.onclick = () => overlay.classList.add('hidden');
     }
 
     fetch('paginas.json')
       .then(response => response.json())
       .then(data => {
-        for (let i = 1; i <= totalPages; i++) {
-          const el = createPage(i);
+        totalPages = data.length;
+        data.forEach((pagina, index) => {
+          const el = createPageElement(pagina, index + 1);
           flipbook.append(el);
-        }
+        });
 
         flipbook.turn({
           width: 800,
@@ -72,7 +97,6 @@
           when: {
             turning: (e, page) => {
               sound.play();
-              currentPage = page;
               updateIndicator(page);
             }
           }
@@ -83,14 +107,9 @@
 
     document.getElementById('prev-page').onclick = () => flipbook.turn('previous');
     document.getElementById('next-page').onclick = () => flipbook.turn('next');
-
-    document.getElementById('toggle-darkmode').addEventListener('click', () => {
-      document.body.classList.toggle('dark');
-    });
-
-    document.getElementById('zoom-toggle').addEventListener('click', () => {
-      document.getElementById('flipbook').classList.toggle('zoomed');
-    });
+    document.getElementById('toggle-darkmode').onclick = () => document.body.classList.toggle('dark');
+    document.getElementById('zoom-toggle').onclick = () => document.getElementById('flipbook').classList.toggle('zoomed');
   </script>
+
 </body>
 </html>
