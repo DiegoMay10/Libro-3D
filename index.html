@@ -14,8 +14,8 @@
 
 <div id="flipbook"></div>
 
-<audio id="page-sound" src="sonido/pasar-pagina.mp3" preload="auto"></audio>
-<audio id="cerrar-sound" src="sonido/cierre-libro.mp3" preload="auto"></audio>
+<audio id="page-sound" src="pasar-pagina.mp3" preload="auto"></audio>
+<audio id="cerrar-sound" 'datacierre-libro.mp3" preload="auto"></audio>
 
 <script>
 let zoomed = false;
@@ -66,7 +66,7 @@ function cerrarLibro() {
   }, 1000);
 }
 
-fetch('data/paginas.json')
+fetch('paginas.json')
   .then(response => response.json())
   .then(data => {
     data.forEach(pagina => {
