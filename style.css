@@ -67,6 +67,7 @@ h1 {
   width: 800px;
   height: 500px;
   margin: 20px auto;
+  transform-style: flat;
   transition: transform 0.3s ease;
   perspective: 2000px;
 }
