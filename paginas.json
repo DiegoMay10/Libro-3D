@@ -1,8 +1,8 @@
 [
-  { "tipo": "imagen", "src": "img/portada.jpg" },
+  { "tipo": "imagen", "src": "portada.jpg" },
   { "tipo": "html", "contenido": "<h1>Bienvenidos</h1><p>Esta es una presentación interactiva.</p>" },
-  { "tipo": "imagen", "src": "img/pagina1.jpg" },
+  { "tipo": "imagen", "src": "pagina1.jpg" },
   { "tipo": "html", "contenido": "<ul><li>Punto 1</li><li>Punto 2</li><li>Punto 3</li></ul>" },
-  { "tipo": "imagen", "src": "img/contraportada.jpg" },
+  { "tipo": "imagen", "src": "contraportada.jpg" },
   { "tipo": "cierre", "contenido": "¡Gracias por leer! Has llegado al final del libro." }
 ]
