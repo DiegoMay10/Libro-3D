@@ -90,18 +90,20 @@
           flipbook.append(el);
         });
 
-        flipbook.turn({
-          width: 800,
-          height: 500,
-          autoCenter: true,
-          acceleration: false,
-          when: {
-            turning: (e, page) => {
-              sound.play();
-              updateIndicator(page);
-            }
-          }
-        });
+        const isMobile = window.innerWidth <= 768;
+
+$('#flipbook').turn({
+  width: isMobile ? 300 : 800,
+  height: isMobile ? 400 : 500,
+  autoCenter: true,
+  acceleration: false,
+  when: {
+    turning: (e, page) => {
+      sound.play();
+      updateIndicator(page);
+    }
+  }
+});
 
         updateIndicator(1);
       });
