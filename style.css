@@ -148,3 +148,40 @@ body.dark .page {
   opacity: 1;
   pointer-events: all;
 }
+/* Responsive layout para móviles */
+@media (max-width: 768px) {
+  header {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  #flipbook {
+    width: 100%;
+    height: auto;
+    transform: scale(0.9);
+  }
+
+  .page {
+    width: 100% !important;
+    height: auto !important;
+    box-sizing: border-box;
+    padding: 10px;
+  }
+
+  .page img {
+    width: 100%;
+    height: auto;
+  }
+
+  h1 {
+    font-size: 1.4rem;
+  }
+
+  #page-indicator {
+    font-size: 0.9rem;
+  }
+
+  #fullscreen-overlay {
+    background-size: contain;
+  }
+}
