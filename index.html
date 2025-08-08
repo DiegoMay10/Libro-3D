@@ -18,7 +18,7 @@
   </header>  <main>
     <h1>📖 Libro 3D Interactivo</h1>
     <div id="flipbook"></div>
-  </main>  <div id="fullscreen-overlay" class="hidden"></div><audio id="page-sound" src="sonido/pasar-pagina.mp3" preload="auto"></audio> <audio id="cerrar-sound" src="sonido/cierre-libro.mp3" preload="auto"></audio>
+  </main>  <div id="fullscreen-overlay" class="hidden"></div><audio id="page-sound" src="pasar-pagina.mp3" preload="auto"></audio> <audio id="cerrar-sound" src="cierre-libro.mp3" preload="auto"></audio>
 
   <script>
     const isMobile = window.innerWidth <= 768;
@@ -50,7 +50,7 @@
       overlay.addEventListener('click', () => overlay.classList.add('hidden'));
     }
 
-    fetch('data/paginas.json')
+    fetch('paginas.json')
       .then(response => response.json())
       .then(data => {
         for (let i = 1; i <= totalPages; i++) {
