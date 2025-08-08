@@ -2,92 +2,95 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Libro 3D Avanzado</title>
+  <title>Libro 3D Interactivo Mejorado</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/blasten/turn.js@4/turn.min.js"></script>
-  </head>
+</head>
 <body>
+  <header>
+    <button id="prev-page">⬅ Anterior</button>
+    <span id="page-indicator">Página 1 / 25</span>
+    <button id="next-page">Siguiente ➡</button>
+    <button id="toggle-darkmode">🌙 Tema</button>
+    <button id="zoom-toggle">🔍 Zoom</button>
+  </header>
 
-<button id="toggle-darkmode">🌙 Tema</button>
-<button id="zoom-toggle">🔍 Zoom</button>
+  <main>
+    <h1>📖 Libro 3D Avanzado</h1>
+    <div id="flipbook"></div>
+  </main>
 
-<div id="flipbook"></div>
+  <div id="fullscreen-overlay" class="hidden"></div>
 
-<audio id="page-sound" src="pasar-pagina.mp3" preload="auto"></audio>
-<audio id="cerrar-sound" 'datacierre-libro.mp3" preload="auto"></audio>
+  <audio id="page-sound" src="pasar-pagina.mp3" preload="auto"></audio>
+  <audio id="cerrar-sound" src="cierre-libro.mp3" preload="auto"></audio>
 
-<script>
-let zoomed = false;
+  <script>
+    let currentPage = 1;
+    const totalPages = 25;
+    const flipbook = $('#flipbook');
+    const sound = document.getElementById('page-sound');
+    const cerrarSound = document.getElementById('cerrar-sound');
 
-document.getElementById('toggle-darkmode').addEventListener('click', () => {
-  document.body.classList.toggle('dark');
-});
+    function updateIndicator(page) {
+      document.getElementById('page-indicator').innerText = `Página ${page} / ${totalPages}`;
+    }
 
-document.getElementById('zoom-toggle').addEventListener('click', () => {
-  zoomed = !zoomed;
-  document.getElementById('flipbook').classList.toggle('zoomed', zoomed);
-});
+    function createPage(idx) {
+      const div = document.createElement('div');
+      div.className = 'page';
+      const img = document.createElement('img');
+      img.src = `https://placehold.co/400x500?text=Página+${idx}`;
+      img.alt = `Página ${idx}`;
+      img.addEventListener('click', () => showFullscreen(img.src));
+      div.appendChild(img);
+      return div;
+    }
 
-const flipbook = $('#flipbook');
-const sound = document.getElementById('page-sound');
-const cerrarSound = document.getElementById('cerrar-sound');
+    function showFullscreen(src) {
+      const overlay = document.getElementById('fullscreen-overlay');
+      overlay.style.backgroundImage = `url(${src})`;
+      overlay.classList.remove('hidden');
+      overlay.addEventListener('click', () => overlay.classList.add('hidden'));
+    }
 
-function createPageElement(page) {
-  const div = document.createElement('div');
-  div.className = 'page';
+    fetch('paginas.json')
+      .then(response => response.json())
+      .then(data => {
+        for (let i = 1; i <= totalPages; i++) {
+          const el = createPage(i);
+          flipbook.append(el);
+        }
 
-  if (page.tipo === 'imagen') {
-    const img = document.createElement('img');
-    img.src = page.src;
-    img.alt = "Página";
-    div.appendChild(img);
+        flipbook.turn({
+          width: 800,
+          height: 500,
+          autoCenter: true,
+          when: {
+            turning: (e, page) => {
+              sound.play();
+              currentPage = page;
+              updateIndicator(page);
+            }
+          }
+        });
 
-  } else if (page.tipo === 'html') {
-    div.innerHTML = page.contenido;
+        updateIndicator(1);
+      });
 
-  } else if (page.tipo === 'cierre') {
-    div.innerHTML = `<div class="cierre-libro">
-      <h2>${page.contenido}</h2>
-      <button onclick="cerrarLibro()">🔁 Volver a empezar</button>
-    </div>`;
-  }
+    document.getElementById('prev-page').onclick = () => flipbook.turn('previous');
+    document.getElementById('next-page').onclick = () => flipbook.turn('next');
 
-  return div;
-}
-
-function cerrarLibro() {
-  const libro = document.getElementById("flipbook");
-  cerrarSound.play();
-  libro.classList.add("cerrado");
-  setTimeout(() => {
-    $('#flipbook').turn('page', 1);
-    libro.classList.remove("cerrado");
-  }, 1000);
-}
-
-fetch('paginas.json')
-  .then(response => response.json())
-  .then(data => {
-    data.forEach(pagina => {
-      const el = createPageElement(pagina);
-      flipbook.append(el);
+    document.getElementById('toggle-darkmode').addEventListener('click', () => {
+      document.body.classList.toggle('dark');
     });
 
-    flipbook.turn({
-      width: 800,
-      height: 500,
-      autoCenter: true,
-      when: {
-        turning: () => sound.play()
-      }
+    document.getElementById('zoom-toggle').addEventListener('click', () => {
+      document.getElementById('flipbook').classList.toggle('zoomed');
     });
-  })
-  .catch(err => {
-    flipbook.append('<div class="page">Error al cargar contenido</div>');
-    console.error(err);
-  });
-</script>
-
+  </script>
 </body>
 </html>
