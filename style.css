@@ -1,10 +1,11 @@
 body {
-  font-family: sans-serif;
+  font-family: 'Montserrat', sans-serif;
   background: #f0f0f0;
   color: #333;
   transition: background 0.3s, color 0.3s;
   text-align: center;
   padding: 20px;
+  margin: 0;
 }
 
 body.dark {
@@ -12,34 +13,62 @@ body.dark {
   color: #f0f0f0;
 }
 
-#toggle-darkmode, #zoom-toggle {
-  position: fixed;
-  top: 20px;
+header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: #ffffff;
+  padding: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  transition: background 0.3s ease;
+}
+
+body.dark header {
+  background: #1e1e1e;
+}
+
+#toggle-darkmode, #zoom-toggle, #prev-page, #next-page {
   padding: 10px 15px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  z-index: 999;
+  font-weight: bold;
+  background-color: #e0e0e0;
+  transition: background 0.3s ease;
 }
 
-#toggle-darkmode {
-  right: 20px;
-}
-
-#zoom-toggle {
-  right: 160px;
+#toggle-darkmode:hover,
+#zoom-toggle:hover,
+#prev-page:hover,
+#next-page:hover {
+  background-color: #ccc;
 }
 
 body.dark button {
-  background: #333;
-  color: #fff;
+  background-color: #333;
+  color: white;
+}
+
+h1 {
+  margin: 30px 0 10px;
+  font-size: 1.8rem;
+}
+
+#page-indicator {
+  padding: 10px;
+  font-weight: bold;
+  font-size: 1rem;
 }
 
 #flipbook {
   width: 800px;
   height: 500px;
-  margin: 80px auto;
+  margin: 20px auto;
   transition: transform 0.3s ease;
+  perspective: 2000px;
 }
 
 .page {
@@ -48,15 +77,25 @@ body.dark button {
   background: white;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
   overflow: hidden;
-  padding: 20px;
+  padding: 0;
   text-align: left;
   font-size: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.3s ease;
 }
 
 .page img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.page img:hover {
+  transform: scale(1.05);
 }
 
 body.dark .page {
@@ -76,10 +115,35 @@ body.dark .page {
   height: 100%;
   text-align: center;
   font-size: 1.2rem;
+  padding: 20px;
 }
 
 #flipbook.cerrado {
   transform: scale(0.8) rotateY(20deg);
   opacity: 0.2;
   transition: all 0.8s ease-in-out;
+}
+
+#fullscreen-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 2000;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: rgba(0,0,0,0.9);
+  transition: opacity 0.3s ease;
+}
+
+#fullscreen-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#fullscreen-overlay:not(.hidden) {
+  opacity: 1;
+  pointer-events: all;
 }
