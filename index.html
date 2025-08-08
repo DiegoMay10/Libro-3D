@@ -1,1 +1,93 @@
-<!-- Placeholder index.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Libro 3D Avanzado</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="turn.min.js"></script>
+</head>
+<body>
+
+<button id="toggle-darkmode">🌙 Tema</button>
+<button id="zoom-toggle">🔍 Zoom</button>
+
+<div id="flipbook"></div>
+
+<audio id="page-sound" src="sonido/pasar-pagina.mp3" preload="auto"></audio>
+<audio id="cerrar-sound" src="sonido/cierre-libro.mp3" preload="auto"></audio>
+
+<script>
+let zoomed = false;
+
+document.getElementById('toggle-darkmode').addEventListener('click', () => {
+  document.body.classList.toggle('dark');
+});
+
+document.getElementById('zoom-toggle').addEventListener('click', () => {
+  zoomed = !zoomed;
+  document.getElementById('flipbook').classList.toggle('zoomed', zoomed);
+});
+
+const flipbook = $('#flipbook');
+const sound = document.getElementById('page-sound');
+const cerrarSound = document.getElementById('cerrar-sound');
+
+function createPageElement(page) {
+  const div = document.createElement('div');
+  div.className = 'page';
+
+  if (page.tipo === 'imagen') {
+    const img = document.createElement('img');
+    img.src = page.src;
+    img.alt = "Página";
+    div.appendChild(img);
+
+  } else if (page.tipo === 'html') {
+    div.innerHTML = page.contenido;
+
+  } else if (page.tipo === 'cierre') {
+    div.innerHTML = `<div class="cierre-libro">
+      <h2>${page.contenido}</h2>
+      <button onclick="cerrarLibro()">🔁 Volver a empezar</button>
+    </div>`;
+  }
+
+  return div;
+}
+
+function cerrarLibro() {
+  const libro = document.getElementById("flipbook");
+  cerrarSound.play();
+  libro.classList.add("cerrado");
+  setTimeout(() => {
+    $('#flipbook').turn('page', 1);
+    libro.classList.remove("cerrado");
+  }, 1000);
+}
+
+fetch('data/paginas.json')
+  .then(response => response.json())
+  .then(data => {
+    data.forEach(pagina => {
+      const el = createPageElement(pagina);
+      flipbook.append(el);
+    });
+
+    flipbook.turn({
+      width: 800,
+      height: 500,
+      autoCenter: true,
+      when: {
+        turning: () => sound.play()
+      }
+    });
+  })
+  .catch(err => {
+    flipbook.append('<div class="page">Error al cargar contenido</div>');
+    console.error(err);
+  });
+</script>
+
+</body>
+</html>
